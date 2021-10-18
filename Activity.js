@@ -46,6 +46,7 @@ promise.then(function(response){
     }
     //console.log(JSON.stringify(teamsArray));
     fs.writeFileSync('teams.json',JSON.stringify(teamsArray));
+    writeToExcel(teamsArray);
 });
 
 function makeTeamsjson(match,teamsArray){
@@ -92,3 +93,26 @@ function makeTeamsjson(match,teamsArray){
     
 }
 
+function writeToExcel(teamsArray){
+    let workbook = new excel4Node.Workbook();
+    let myStyle = workbook.createStyle({
+        font: {
+          bold: true
+        },
+      });
+    for(let i=0;i<teamsArray.length;i++){
+        let sheetname = teamsArray[i].name;
+        let currSheet = workbook.addWorksheet(sheetname); 
+        currSheet.cell(1, 1).string('VS').style(myStyle);
+        currSheet.cell(1, 2).string('S1').style(myStyle);
+        currSheet.cell(1, 3).string('S2').style(myStyle);
+        currSheet.cell(1, 4).string('RESULT').style(myStyle);
+        for(let j=0;j<teamsArray[i].match.length;j++){
+            currSheet.cell(2+j,1).string(teamsArray[i].match[j].vs);
+            currSheet.cell(2+j,2).string(teamsArray[i].match[j].s1);
+            currSheet.cell(2+j,3).string(teamsArray[i].match[j].s2);
+            currSheet.cell(2+j,4).string(teamsArray[i].match[j].result);
+        }
+    }
+    workbook.write('teams.csv');
+}
